@@ -1,0 +1,81 @@
+---
+title: "A03a_G42955089"
+author: "Jiwei Zeng"
+date: "September 20, 2017"
+output: html_document
+---
+Part A
+
+a.
+
+```{r}
+mydf <- read.csv("households.csv",header = TRUE)
+library(plyr)
+library(dplyr)
+glimpse(mydf)
+```
+
+b.
+
+Family.size: ordinal
+It is an categorial variable and it can order by size of the family, so it should be ordinal.
+
+Location:nominal
+It is an unordered categorial variable, so it should be difined as nominal.
+
+Ownership:nominal
+It is an unordered categorial variable, so it should be difined as nominal.
+
+c.
+
+```{r}
+hist(mydf$Family.Size)
+#It is skewed to the right.
+```
+
+```{r}
+hist(mydf$First.Income)
+#It is skewed to the right.
+```
+```{r}
+hist(mydf$Second.Income)
+#It is skewed to the right.
+```
+```{r}
+hist(mydf$Monthly.Payment)
+#It is skewed to the right.
+```
+```{r}
+hist(mydf$Utilities)
+#It is skewed to the left.
+```
+```{r}
+hist(mydf$Debt)
+#It is skewed to the right.
+```
+
+d.
+
+```{r}
+max(mydf$Debt)
+#So the maximum debt levels is 9104.
+```
+```{r}
+min(mydf$Debt)
+#So the minimum debt levels is 227.
+```
+
+e.
+
+The indebtedness levels at each of the 25th, 50th, and 75th percentiles:
+```{r}
+quantile(mydf$Debt,probs = seq(0.25,0.75,0.25))
+```
+
+f.
+
+The interquartile range is 5675.5-2948.5=2727. The result is small, which means the data of the debt is skewed.
+
+g.
+
+The income of most families is lower than the mean of income. Also, most of their monthly payment and debt is lower than the mean. The credit risk is low.

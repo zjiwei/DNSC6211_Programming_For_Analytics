@@ -1,0 +1,70 @@
+---
+title: "A03c_G42955089"
+author: "Jiwei Zeng"
+date: "September 21, 2017"
+output: html_document
+---
+
+a.
+
+
+```{r}
+
+rnorm2 <- function(n,mean,sd) { mean+sd*scale(rnorm(n)) }
+set.seed(1239)
+r1 <- rnorm2(100,25,4)
+r2 <- rnorm2(50,10,3)
+samplingframe <- c(r1,r2)
+hist(samplingframe, breaks=20,col = "pink")
+
+```
+
+b
+
+```{r}
+
+Y <- 0
+for(i in 1:50){
+  x <- sample(samplingframe,15)
+  avg15 <- mean(x)
+  Y[i] <- avg15
+}
+
+hist(Y, col = "lightblue")
+```
+
+c.
+
+
+```{r}
+Z <- 0
+for(i in 1:50){
+  k <- sample(samplingframe,45)
+  avg45 <- mean(k)
+  Z[i] <- avg45
+}
+
+hist(Z, col = "pink")
+```
+
+
+d
+
+
+```{r}
+hist(Y, col = "lightblue",xlim = c(12,26),ylim = c(0,20),main = "Histogram of Y & Z",xlab = "Blue: Y, Pink:Z") 
+par(new = TRUE) 
+hist(Z, col = "pink",xlim = c(12,26),ylim = c(0,20),main = "",xlab = "")
+
+```
+
+Explanation:
+
+Histograms in parts b and c are normally distributed, though the original data in part a is not in normal distribution.
+
+e.
+
+When we choose samples from data without normal distribution, with times increasing, samples we choose will be normalized.
+
+f.
+Yes, I understand the CLT, thanks to plots and comparison.

@@ -1,0 +1,85 @@
+---
+title: "A03b_G42955089"
+author: "Jiwei Zeng"
+date: "September 21, 2017"
+output: html_document
+---
+
+Part B
+
+a.
+
+```{r}
+mydf <- read.csv("SupermarketTransactions.csv",header = TRUE)
+library(plyr)
+library(dplyr)
+
+aus <- mydf %>% 
+  select(Units.Sold) %>% 
+  filter(as.Date(mydf$Purchase.Date, "%m/%d/%Y") < "2008-03-01" & as.Date(mydf$Purchase.Date, "%m/%d/%Y") >"2007-12-31")
+
+barplot(table(aus), xlab="Unit.Sold", ylab="Frequency")
+
+ar <- mydf %>% 
+  select(Revenue) %>% 
+  filter(as.Date(mydf$Purchase.Date, "%m/%d/%Y") < "2008-03-01" & as.Date(mydf$Purchase.Date, "%m/%d/%Y") >"2007-12-31")
+
+hist(ar$Revenue)
+```
+
+
+b.
+
+```{r}
+
+bus <- mydf %>% 
+  select(Units.Sold) %>% 
+  filter(mydf$Gender =="F" & mydf$Marital.Status == "M" & mydf$Homeowner == "Y")
+
+barplot(table(bus), xlab="Unit.Sold", ylab="Frequency")
+
+br <- mydf %>% 
+  select(Revenue) %>% 
+  filter(mydf$Gender =="F" & mydf$Marital.Status == "M" & mydf$Homeowner == "Y")
+
+hist(br$Revenue)
+```
+
+
+c.
+
+```{r}
+cus <- mydf %>% 
+  select(Units.Sold) %>% 
+  filter(mydf$State.or.Province == "CA")
+
+barplot(table(cus), xlab="Unit.Sold", ylab="Frequency")
+
+cr <- mydf %>% 
+  select(Revenue) %>% 
+  filter(mydf$State.or.Province == "CA")
+
+hist(cr$Revenue)
+```
+
+d.
+
+
+```{r}
+dus <- mydf %>% 
+  select(Units.Sold) %>% 
+  filter(mydf$Product.Department == "Produce")
+
+barplot(table(dus), xlab="Unit.Sold", ylab="Frequency")
+
+dr <- mydf %>% 
+  select(Revenue) %>% 
+  filter(mydf$Product.Department == "Produce")
+
+hist(dr$Revenue)
+```
+
+
+Analysis:
+
+According to the graphs above, we can know most subpopulation buy 4 units. And all of histograms of revenue is skewed to the right.
