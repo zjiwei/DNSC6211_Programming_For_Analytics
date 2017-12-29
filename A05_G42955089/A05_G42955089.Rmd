@@ -1,0 +1,117 @@
+---
+title: "A05_G42955089"
+author: "Jiwei Zeng"
+date: "October 5, 2017"
+output: html_document
+---
+
+```{r}
+# read data
+mydf <- read.csv("creditdata.csv", na.strings = "")
+
+# read data
+str(mydf)
+
+#To make sure there is not any nas in the data frame.
+sapply(mydf,function(x) sum(is.na(x)))
+
+# Descriptive stats
+table(mydf$rating)
+summary(mydf$experience)
+table(mydf$homeown)
+table(mydf$loandurn)
+summary(mydf$age)
+table(mydf$mstat)
+table(mydf$rcds)
+table(mydf$jtype)
+summary(mydf$explvl)
+summary(mydf$inc)
+summary(mydf$assts)
+summary(mydf$debt)
+summary(mydf$loanamount)
+summary(mydf$purchprice)
+```
+Start to model
+
+```{r}
+library(dplyr)
+#divide the original data into two parts, one for training, another for test
+mydf.train <- mydf[1:(dim(mydf)[1]/2),]
+mydf.test <- mydf[(dim(mydf)[1]/2+1):(dim(mydf)[1]),]
+
+# Logistic Model
+model.logistic <- glm(formula = rating ~ ., family =binomial(link='logit'), data = mydf.train)
+summary(model.logistic)
+
+```
+
+It is obvious that the variables of homeown, mstat, rcds and jtype are significant.
+
+```{r}
+#use data to test the model
+model.logistic.fitted <- predict(model.logistic,mydf.test,type='response')
+
+#to check the accuracy of the model
+model.logistic.fitted <- ifelse(model.logistic.fitted > 0.5,"good","bad")
+model.logistic.fitted <- as.factor(model.logistic.fitted)
+misClassificationError <- mean(model.logistic.fitted != mydf.test$rating)
+print(paste('Accuracy',1-misClassificationError))
+```
+
+```{r}
+#to check the sensitivity and specificity of the model
+library(gplots)
+library(ROCR)
+p <- predict(model.logistic, mydf.test, type="response")
+pr <- prediction(p, mydf.test$rating)
+prf <- performance(pr, measure = "tpr", x.measure = "fpr")
+plot(prf)
+abline(a=0, b= 1)
+
+#to check the value of auc
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
+```
+
+Decision tree
+
+```{r}
+library(rpart)
+library(rpart.plot)
+
+model.tree <- rpart(rating ~ ., mydf.train, method = "class")
+rpart.plot(model.tree, type=1, extra = 102)
+probs <- predict(model.tree, mydf.test, type = "prob")[,2]
+
+# Create a prediction object: pred
+pred <- prediction(probs, mydf.test$rating)
+
+# Make a performance object: perf
+perf <- performance(pred, "tpr" , "fpr")
+
+# Plot this curve
+plot(perf)
+
+auc.d <- performance(pred, measure = "auc")
+auc.d <- auc.d@y.values[[1]]
+auc.d
+
+```
+
+PartB
+iv:
+According to the decision tree, we can know that the 85% of people without records have the good rating, the biggest group. In the final split, those without records who has more than 1.5 year working experience and more than 102 level income have the highest percentage of good rating. Through the decision tree, we can learn more about features of customers with good rating.
+
+PartC
+(i):
+Usually, if the ROC curve of a model is closer the top left corner or it has higher value of auc, which means it has higher sensitivity and specificity, the model is better. It is obvious that logistic regression model is better, because its ROC curve is closer to the top left corner and it has higher value of auc.
+(ii):
+Sensitivity - the proportion of true positives or the proportion of cases correctly identified by the test as meeting a certain condition.
+(e.g. in mammography testing, the proportion of patients with cancer who test positive).
+Specificity - the proportion of true negatives or the proportion of cases correctly identified by the test as not meeting a certain condition
+(e.g. in mammography testing, the proportion of patients without cancer who test negative).
+Auc - the area between the ROC curve and X-axis. The bigger it is, the closer the ROC curve is closer to the top left corner, which means it has higher sensitivity and specificity.
+
+(iii):
+According the logic regression model, we can know that the homeown, marriage status, records and type of job play important roles in a person's rating.
