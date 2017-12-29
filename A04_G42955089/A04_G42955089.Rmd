@@ -1,0 +1,115 @@
+---
+title: "A04_G42955089"
+author: "Jiwei Zeng"
+date: "September 29, 2017"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(tibble)
+library(xtable)
+library(ggplot2)
+## Part A
+
+# Read the data
+mydf <- read.csv("HR_comma_sep.csv")
+
+# get rows and columns
+dim.data.frame(mydf)
+
+# explore the data structure
+str(mydf)
+
+# Correlate all the numeric fields
+xtable(cor(subset(mydf, select = -c(sales, salary))))
+
+
+# Create a correlation heat map
+library(reshape2)
+melted_cormat <- melt(cor(subset(mydf, select = -c(sales, salary))))
+head(melted_cormat)
+
+g <- ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_raster()
+g <- g + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g
+
+
+# Develop a 3-way table
+mydf$status <- ifelse(mydf$left == 1, "Left", "Stay")
+table(mydf$status,  mydf$salary, mydf$sales)
+
+
+# Employees who leave by department
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = sales, fill = status)) + geom_bar() + guides(fill=FALSE) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+
+
+```
+
+```{r}
+# Employees who stay by department
+
+ggplot(mydf[ which(mydf$status=='Stay'),], 
+       aes(x = sales, fill = status)) + geom_bar() + guides(fill=FALSE) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r}
+#Part B
+
+#Employees who leave the company by salary level
+
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = salary, fill = status)) + geom_bar() + guides(fill=FALSE) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r}
+#Employees who stay the company by salary level
+
+ggplot(mydf[ which(mydf$status=='Stay'),], aes(x = salary, fill = status)) + geom_bar() + guides(fill=FALSE) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r}
+# Make a chart for number of employees who leave the company by time spent in the company
+# faceted by salary level AND department
+
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = time_spend_company, fill = status)) + geom_bar() + guides(fill=FALSE) +theme(axis.text.x = element_text(hjust = 1)) + facet_grid(sales~salary)
+```
+
+```{r}
+# Make a chart for number of employees who stay in the company by time spent in the company
+# faceted by salary level AND department
+
+ggplot(mydf[ which(mydf$status=='Stay'),], aes(x = time_spend_company, fill = status)) + geom_bar() + guides(fill=FALSE) +theme(axis.text.x = element_text(hjust = 1)) + facet_grid(sales~salary)
+```
+
+```{r}
+## Part C
+# Draw a bar plot of how many years did employees stay in the company before leaving
+# Year stayed in the company is the x axis
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = time_spend_company, fill = status)) + geom_bar() + guides(fill=FALSE) +theme(axis.text.x = element_text(hjust = 1))
+
+```
+```{r}
+# Draw a bar plot of how many years did employees stay in the company before leaving
+# by department
+# Year stayed in the company is the x axis
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = time_spend_company, fill = status)) + geom_bar() + guides(fill=FALSE) +theme(axis.text.x = element_text(hjust = 1)) + facet_grid(sales~.)
+```
+
+```{r}
+# Draw a bar plot of how many years did employees stay in the company before leaving
+# by salary level
+# Year stayed in the company is the x axis
+
+ggplot(mydf[ which(mydf$status=='Left'),], aes(x = time_spend_company, fill = status)) + geom_bar() + guides(fill=FALSE) +theme(axis.text.x = element_text(hjust = 1)) + facet_grid(salary~.)
+```
+
+
+Note:
+
+
+Ggplot is very useful in data visualization. We can change our plots according to our needs, no matter how complicated our needs are. I believe it amazing to explore the possability of ggplot.
+
+
+According to the plots, we can know that those departments, which more employees stay in, have higher number of people leaving. Those who have low salary in the company are more willing to leave. Besides, most of those who decide to leave always have stayed in the company for less 5 years.
